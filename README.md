@@ -76,21 +76,6 @@ The application features a modern, responsive design with real-time cart managem
 - **Git** - Version control
 - **npm** - Package management
 
-## 📸 Screenshots
-
-<div align="center">
-
-### Homepage
-![Homepage](https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=Homepage+with+Hero+Banner+and+Product+Grid)
-
-### Product Page
-![Product Page](https://via.placeholder.com/800x400/10B981/FFFFFF?text=Product+Details+with+Image+Gallery)
-
-### Shopping Cart
-![Shopping Cart](https://via.placeholder.com/800x400/F59E0B/FFFFFF?text=Shopping+Cart+with+Items)
-
-</div>
-
 ## 🚀 Installation
 
 ### Prerequisites
