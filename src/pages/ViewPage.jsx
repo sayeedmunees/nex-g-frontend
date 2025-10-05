@@ -84,14 +84,14 @@ const ViewPage = () => {
           quantity: updatedQuantity,
         };
         await updateCartItemAPI(existingCartItem.id, updatePayload);
-        showNotification(`Added item to cart!`, "success");
+        showNotification(`Item added to cart!`, "success");
       } else {
         const addPayload = {
           ...product,
           quantity: quantity,
         };
         await addCartAPI(addPayload);
-        showNotification(`Added item to cart!`, "success");
+        showNotification(`Item added to cart!`, "success");
       }
 
       console.log("Cart updated successfully");
