@@ -17,7 +17,6 @@ A modern, full-stack ecommerce platform built with the React and Json server as 
 - [About](#about)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Screenshots](#screenshots)
 - [Installation](#installation)
 - [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
