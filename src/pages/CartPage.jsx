@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCartAPI } from "../services/allAPI";
 import { deleteCartAPI } from "../services/allAPI";
+import { Link } from "react-router-dom";
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -36,9 +37,11 @@ function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-        <p className="text-gray-600">Your cart is empty</p>
+      <div className="container mx-auto mt-40  p-4">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-3xl font-bold mb-2">Your Cart</h1>
+          <p className="text-gray-600">Your cart is empty</p>
+        </div>
       </div>
     );
   }
@@ -54,14 +57,18 @@ function CartPage() {
             className="flex items-center justify-between bg-white p-4 rounded-lg shadow border border-gray-200"
           >
             <div className="flex items-center space-x-4">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-16 h-16 object-cover rounded"
-              />
+              <Link to={`/view/${item.id}`}>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              </Link>
               <div>
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="text-gray-600">${item.price}</p>
+                <Link to={`/view/${item.id}`}>
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <p className="text-gray-600">${item.price}</p>
+                </Link>
               </div>
             </div>
 

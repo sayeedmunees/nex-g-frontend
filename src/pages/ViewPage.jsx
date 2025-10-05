@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import {
+  FaRegHeart,
+  FaCheck,
+  FaTimes,
+  FaInfoCircle,
+  FaShoppingCart,
+} from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import {
   addCartAPI,
@@ -14,15 +21,27 @@ const ViewPage = () => {
   const { id } = useParams();
   console.log(id);
 
-  // State for product data, loading, and error
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // State for selected size and quantity
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState("");
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isUpdatingWishlist, setIsUpdatingWishlist] = useState(false);
+
+  const showNotification = (message, type = "success") => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  };
 
   const fetchViewProduct = async () => {
     try {
@@ -31,7 +50,6 @@ const ViewPage = () => {
       console.log(result.data);
       setProductData(result.data || null);
 
-      // Set initial states after data is loaded
       if (result.data) {
         setSelectedSize(result.data.size?.[0] || "");
         setActiveImage(result.data.image || "");
@@ -51,68 +69,74 @@ const ViewPage = () => {
   }, [id]);
 
   const addToCart = async (product) => {
+    setIsAddingToCart(true);
     try {
-      // 1. Fetch the current cart
       const cartResponse = await getCartAPI();
       const existingCartItem = cartResponse.data.find(
         (item) => item.id === product.id
-      ); // Ensure your cart items have an 'id' field
-
+      );
       console.log("Existing Cart Item: ", existingCartItem);
 
       if (existingCartItem) {
         const updatedQuantity = existingCartItem.quantity + quantity;
-        // Create a new object with all original data and the updated quantity
         const updatePayload = {
-          ...existingCartItem, // Spread all existing properties
-          quantity: updatedQuantity, // Overwrite the quantity
+          ...existingCartItem,
+          quantity: updatedQuantity,
         };
         await updateCartItemAPI(existingCartItem.id, updatePayload);
+        showNotification(`Added item to cart!`, "success");
       } else {
-        // 3. If it's new, add it with the selected quantity
         const addPayload = {
           ...product,
-          quantity: quantity, // Use the component's quantity state
+          quantity: quantity,
         };
         await addCartAPI(addPayload);
+        showNotification(`Added item to cart!`, "success");
       }
 
       console.log("Cart updated successfully");
     } catch (error) {
       console.error("Failed to update cart:", error);
-      // Provide user feedback on error
+      showNotification(
+        "Failed to add item to cart. Please try again.",
+        "error"
+      );
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
   const addToWishlist = async (product) => {
+    setIsUpdatingWishlist(true);
     try {
-      // 1. Fetch the current cart
-      const cartResponse = await getWishlistAPI();
-      const existingCartItem = cartResponse.data.find(
+      const wishlistResponse = await getWishlistAPI();
+      const existingWishlistItem = wishlistResponse.data.find(
         (item) => item.id === product.id
-      ); // Ensure your cart items have an 'id' field
+      );
 
-      console.log("Existing Cart Item: ", existingCartItem);
+      console.log("Existing Wishlist Item: ", existingWishlistItem);
 
-      if (existingCartItem) {
-        await deleteWishlistAPI(existingCartItem.id);
+      if (existingWishlistItem) {
+        await deleteWishlistAPI(existingWishlistItem.id);
+        showNotification("Removed from wishlist", "info");
       } else {
-        // 3. If it's new, add it with the selected quantity
         const addPayload = {
           ...product,
-          quantity: quantity, // Use the component's quantity state
+          quantity: quantity,
         };
         await addWishlistAPI(addPayload);
+        showNotification("Added to wishlist!", "success");
       }
 
-      console.log("Cart updated successfully");
+      console.log("Wishlist updated successfully");
     } catch (error) {
-      console.error("Failed to update cart:", error);
-      // Provide user feedback on error
+      console.error("Failed to update wishlist:", error);
+      showNotification("Failed to update wishlist. Please try again.", "error");
+    } finally {
+      setIsUpdatingWishlist(false);
     }
   };
 
-  // Show loading state
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -123,7 +147,6 @@ const ViewPage = () => {
     );
   }
 
-  // Show error state
   if (error || !productData) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -136,15 +159,13 @@ const ViewPage = () => {
     );
   }
 
-  // Sample additional images (in real app, this would come from API)
   const additionalImages = [
     productData.image,
-    "https://images.pexels.com/photos/2584269/pexels-photo-2584269.jpeg",
-    "https://images.pexels.com/photos/2010812/pexels-photo-2010812.jpeg",
-    "https://images.pexels.com/photos/1631181/pexels-photo-1631181.jpeg",
+    "https://images.pexels.com/photos/983497/pexels-photo-983497.jpeg",
+    "https://images.pexels.com/photos/2866077/pexels-photo-2866077.jpeg",
+    "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg",
   ];
 
-  // Calculate discount percentage safely
   const discountPercentage =
     productData.oldPrice && productData.discountedPrice
       ? Math.round(
@@ -155,7 +176,6 @@ const ViewPage = () => {
         )
       : 0;
 
-  // Render star rating
   const renderRating = (rating) => {
     const validRating = rating || 0;
     return [...Array(5)].map((_, index) => (
@@ -170,22 +190,9 @@ const ViewPage = () => {
     ));
   };
 
-  // Handle add to cart
-  const handleAddToCart = () => {
-    const cartItem = {
-      ...productData,
-      selectedSize,
-      quantity,
-    };
-    console.log("Added to cart:", cartItem);
-    // Here you would typically dispatch to Redux or update context
-    alert(`Added ${quantity} ${productData.title} (${selectedSize}) to cart!`);
-  };
-
   return (
-    <div className="max-w-7xl my-auto mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Product Images Section */}
         <div className="md:w-1/2">
           <div className="mb-4 bg-white rounded-lg overflow-hidden border">
             <img
@@ -194,13 +201,15 @@ const ViewPage = () => {
               className="w-full h-96 object-cover"
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto p-2">
             {additionalImages.map((img, index) => (
               <button
                 key={index}
                 onClick={() => setActiveImage(img)}
-                className={`flex-shrink-0 w-20 h-20 border-2 rounded ${
-                  activeImage === img ? "border-blue-500" : "border-gray-300"
+                className={`flex-shrink-0 w-20 h-20 border-2 rounded transition-all ${
+                  activeImage === img
+                    ? "border-gray-900 scale-105"
+                    : "border-gray-300 hover:border-gray-400"
                 }`}
               >
                 <img
@@ -213,21 +222,12 @@ const ViewPage = () => {
           </div>
         </div>
 
-        {/* Product Details Section */}
         <div className="md:w-1/2">
-          {/* Breadcrumb */}
-          <nav className="text-sm text-gray-500 mb-4">
-            Home / {productData.category} / {productData.type} /{" "}
-            {productData.title}
-          </nav>
-
-          {/* Product Title and Brand */}
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {productData.title}
           </h1>
           <p className="text-lg text-gray-600 mb-4">by {productData.brand}</p>
 
-          {/* Rating and Stock */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-1">
               {renderRating(productData.rating)}
@@ -247,7 +247,6 @@ const ViewPage = () => {
             )}
           </div>
 
-          {/* Price Section */}
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
               <span className="text-3xl font-bold text-gray-900">
@@ -273,7 +272,6 @@ const ViewPage = () => {
             )}
           </div>
 
-          {/* Description */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Description</h3>
             <p className="text-gray-600 leading-relaxed">
@@ -281,7 +279,6 @@ const ViewPage = () => {
             </p>
           </div>
 
-          {/* Size Selection */}
           {productData.size && productData.size.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-3">Size</h3>
@@ -290,10 +287,10 @@ const ViewPage = () => {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border rounded-md font-medium ${
+                    className={`px-4 py-2 border rounded-md font-medium transition-all ${
                       selectedSize === size
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-300 text-gray-700 hover:border-gray-400"
+                        ? "border-gray-900 bg-blue-50 text-gray-950 shadow-md"
+                        : "border-gray-300 text-gray-700 hover:border-gray-400 hover:shadow-sm"
                     }`}
                   >
                     {size}
@@ -303,7 +300,6 @@ const ViewPage = () => {
             </div>
           )}
 
-          {/* Quantity and Add to Cart */}
           <div className="mb-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2">
@@ -311,14 +307,16 @@ const ViewPage = () => {
                 <div className="flex items-center border border-gray-300 rounded">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                    className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
                   >
                     -
                   </button>
-                  <span className="px-4 py-1">{quantity}</span>
+                  <span className="px-4 py-1 min-w-12 text-center">
+                    {quantity}
+                  </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                    className="px-3 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
                   >
                     +
                   </button>
@@ -329,22 +327,69 @@ const ViewPage = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => addToCart(productData)}
-                disabled={productData.stock === 0}
-                className={`flex-1 py-3 px-6 rounded-md font-semibold ${
+                disabled={productData.stock === 0 || isAddingToCart}
+                className={`flex-1 py-3 px-6 rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${
                   productData.stock === 0
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    : isAddingToCart
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-950 hover:bg-white hover:text-gray-950 border border-gray-950 hover:shadow-xl text-white"
                 }`}
               >
-                {productData.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                {isAddingToCart ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Adding...
+                  </>
+                ) : productData.stock === 0 ? (
+                  "Out of Stock"
+                ) : (
+                  <>
+                    <FaShoppingCart />
+                    Add to Cart
+                  </>
+                )}
               </button>
               <button
                 onClick={() => addToWishlist(productData)}
-                className="py-3 px-6 border border-gray-300 rounded-md font-semibold hover:bg-gray-50"
+                disabled={isUpdatingWishlist}
+                className={`py-3 px-6 border inline-flex items-center gap-3 rounded-md font-semibold transition-all ${
+                  isUpdatingWishlist
+                    ? "bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed"
+                    : "border-gray-900 text-gray-950 hover:bg-gray-950 hover:text-white"
+                }`}
               >
-                ♡ Wishlist
+                {isUpdatingWishlist ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                ) : (
+                  <FaRegHeart />
+                )}
+                Wishlist
               </button>
             </div>
+
+            {notification.show && (
+              <div
+                className={`mt-4 p-3 rounded-lg border-l-4 flex items-center gap-3 animate-fade-in ${
+                  notification.type === "success"
+                    ? "bg-green-50 border-green-500 text-green-700"
+                    : notification.type === "error"
+                    ? "bg-red-50 border-red-500 text-red-700"
+                    : "bg-blue-50 border-blue-500 text-blue-700"
+                }`}
+              >
+                {notification.type === "success" && (
+                  <FaCheck className="text-green-500" />
+                )}
+                {notification.type === "error" && (
+                  <FaTimes className="text-red-500" />
+                )}
+                {notification.type === "info" && (
+                  <FaInfoCircle className="text-blue-500" />
+                )}
+                <span className="font-medium">{notification.message}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
