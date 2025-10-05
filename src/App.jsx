@@ -1,33 +1,28 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { AppProvider } from "./context/AppContext";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import View from "./pages/View";
-import Cart from "./pages/Cart";
-import Wishlist from "./pages/Wishlist";
-import Pnf from "./pages/Pnf";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ProductProvider } from "./context/ProductContext";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import CartPage from "./pages/CartPage";
+import WishlistPage from "./pages/WishlistPage";
+import ProductsPage from "./pages/ProductsPage";
+import ViewPage from "./pages/ViewPage";
 
 function App() {
   return (
-    <AppProvider>
-      <div className="min-h-screen flex flex-col bg-white">
-        <Header />
-        <main className="flex-grow">
+    <ProductProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/product/:id" element={<View />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="*" element={<Pnf />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/view/:id" element={<ViewPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
           </Routes>
-        </main>
-        <Footer />
-      </div>
-    </AppProvider>
+        </div>
+      </Router>
+    </ProductProvider>
   );
 }
 

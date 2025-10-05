@@ -6,28 +6,42 @@ export const getProductsAPI = async () => {
   return await commonAPI("get", `${serverURL}/products`, "");
 };
 
-//  1. add resume to the server using - POST, reqBody
-export const addResumeAPI = async (reqBody) => {
-  return await commonAPI("post", `${serverURL}/resumes`, reqBody);
+//  2. get all products on the wishlist in server using - GET
+export const getViewProductAPI = async (id) => {
+  return await commonAPI("get", `${serverURL}/products/${id}`, "");
 };
 
-//  2. add resume to history to the server using - POST, reqBody
-export const addHistoryAPI = async (reqBody) => {
-  return await commonAPI("post", `${serverURL}/history`, reqBody);
+//  3. add a product to cart in the server using - POST, reqBody
+export const addCartAPI = async (reqBody) => {
+  return await commonAPI("post", `${serverURL}/cart`, reqBody);
 };
 
-//  4. delete a resume from history in the server using - Delete
-export const deleteHistoryAPI = async (id) => {
-  return await commonAPI("delete", `${serverURL}/history/${id}`, "");
+//  4. get all products on the cart in server using - GET
+export const getCartAPI = async () => {
+  return await commonAPI("get", `${serverURL}/cart`, "");
 };
 
-//  5. Get a particular resume from history in the server using - Get
-export const getAResumeHistoryAPI = async (id) => {
-  console.log(id);
-  return await commonAPI("get", `${serverURL}/history/${id}`, "");
+//  5. delete a product in the cart in the server using - Delete
+export const deleteCartAPI = async (id) => {
+  return await commonAPI("delete", `${serverURL}/cart/${id}`, "");
 };
 
-//  6. Update a resume from history in the server using - PUT
-export const updateResumeHistoryAPI = async (id, reqBody) => {
-  return await commonAPI("put", `${serverURL}/history/${id}`, reqBody);
+//  6. add a product to wishlist in the server using - POST, reqBody
+export const addWishlistAPI = async (reqBody) => {
+  return await commonAPI("post", `${serverURL}/wishlist`, reqBody);
 };
+
+//  7. get all products on the wishlist in server using - GET
+export const getWishlistAPI = async () => {
+  return await commonAPI("get", `${serverURL}/wishlist`, "");
+};
+
+//  8. delete a product in the wishlist in the server using - Delete
+export const deleteWishlistAPI = async (id) => {
+  return await commonAPI("delete", `${serverURL}/wishlist/${id}`, "");
+};
+
+// //  6. Update a resume from history in the server using - PUT
+// export const updateResumeHistoryAPI = async (id, reqBody) => {
+//   return await commonAPI("put", `${serverURL}/history/${id}`, reqBody);
+// };
