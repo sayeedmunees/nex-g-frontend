@@ -8,7 +8,7 @@
 
 A modern, full-stack ecommerce platform built with the React and Json server as part of my web development course.
 
-**[Live Demo]** • **[Report Bug]** • **[Request Feature]**
+**[Live Demo]** •
 
 </div>
 
