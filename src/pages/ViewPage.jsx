@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { addCartAPI, getViewProductAPI } from "../services/allAPI";
+import {
+  addCartAPI,
+  addWishlistAPI,
+  deleteWishlistAPI,
+  getCartAPI,
+  getViewProductAPI,
+  getWishlistAPI,
+  updateCartItemAPI,
+} from "../services/allAPI";
 
 const ViewPage = () => {
   const { id } = useParams();
@@ -44,10 +52,63 @@ const ViewPage = () => {
 
   const addToCart = async (product) => {
     try {
-      const result = await addCartAPI(product);
-      console.log(result.data);
+      // 1. Fetch the current cart
+      const cartResponse = await getCartAPI();
+      const existingCartItem = cartResponse.data.find(
+        (item) => item.id === product.id
+      ); // Ensure your cart items have an 'id' field
+
+      console.log("Existing Cart Item: ", existingCartItem);
+
+      if (existingCartItem) {
+        const updatedQuantity = existingCartItem.quantity + quantity;
+        // Create a new object with all original data and the updated quantity
+        const updatePayload = {
+          ...existingCartItem, // Spread all existing properties
+          quantity: updatedQuantity, // Overwrite the quantity
+        };
+        await updateCartItemAPI(existingCartItem.id, updatePayload);
+      } else {
+        // 3. If it's new, add it with the selected quantity
+        const addPayload = {
+          ...product,
+          quantity: quantity, // Use the component's quantity state
+        };
+        await addCartAPI(addPayload);
+      }
+
+      console.log("Cart updated successfully");
     } catch (error) {
-      console.error("Failed to add item to cart:", error);
+      console.error("Failed to update cart:", error);
+      // Provide user feedback on error
+    }
+  };
+
+  const addToWishlist = async (product) => {
+    try {
+      // 1. Fetch the current cart
+      const cartResponse = await getWishlistAPI();
+      const existingCartItem = cartResponse.data.find(
+        (item) => item.id === product.id
+      ); // Ensure your cart items have an 'id' field
+
+      console.log("Existing Cart Item: ", existingCartItem);
+
+      if (existingCartItem) {
+        await deleteWishlistAPI(existingCartItem.id);
+      } else {
+        // 3. If it's new, add it with the selected quantity
+        const addPayload = {
+          ...product,
+          quantity: quantity, // Use the component's quantity state
+        };
+        await addWishlistAPI(addPayload);
+      }
+
+      console.log("Cart updated successfully");
+    } catch (error) {
+      console.error("Failed to update cart:", error);
+      // Provide user feedback on error
     }
   };
 
@@ -277,7 +338,10 @@ const ViewPage = () => {
               >
                 {productData.stock === 0 ? "Out of Stock" : "Add to Cart"}
               </button>
-              <button className="py-3 px-6 border border-gray-300 rounded-md font-semibold hover:bg-gray-50">
+              <button
+                onClick={() => addToWishlist(productData)}
+                className="py-3 px-6 border border-gray-300 rounded-md font-semibold hover:bg-gray-50"
+              >
                 ♡ Wishlist
               </button>
             </div>

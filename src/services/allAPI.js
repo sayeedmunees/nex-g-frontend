@@ -21,22 +21,27 @@ export const getCartAPI = async () => {
   return await commonAPI("get", `${serverURL}/cart`, "");
 };
 
-//  5. delete a product in the cart in the server using - Delete
+//  5. Update a item from cart in the server using - PUT
+export const updateCartItemAPI = async (id, reqBody) => {
+  return await commonAPI("put", `${serverURL}/cart/${id}`, reqBody);
+};
+
+//  6. delete a product in the cart in the server using - Delete
 export const deleteCartAPI = async (id) => {
   return await commonAPI("delete", `${serverURL}/cart/${id}`, "");
 };
 
-//  6. add a product to wishlist in the server using - POST, reqBody
+//  7. add a product to wishlist in the server using - POST, reqBody
 export const addWishlistAPI = async (reqBody) => {
   return await commonAPI("post", `${serverURL}/wishlist`, reqBody);
 };
 
-//  7. get all products on the wishlist in server using - GET
+//  8. get all products on the wishlist in server using - GET
 export const getWishlistAPI = async () => {
   return await commonAPI("get", `${serverURL}/wishlist`, "");
 };
 
-//  8. delete a product in the wishlist in the server using - Delete
+//  9. delete a product in the wishlist in the server using - Delete
 export const deleteWishlistAPI = async (id) => {
   return await commonAPI("delete", `${serverURL}/wishlist/${id}`, "");
 };
