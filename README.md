@@ -86,31 +86,8 @@ The application features a modern, responsive design with real-time cart managem
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/nexg-ecommerce.git
-   cd nexg-ecommerce
-   ```
-
-2. **Backend Setup**
-   ```bash
-   # Navigate to server directory
-   cd server
-
-   # Install dependencies
-   npm install
-
-   # Create environment file
-   echo "MONGODB_URI=your_mongodb_connection_string
-   PORT=5000
-   JWT_SECRET=your_jwt_secret" > .env
-
-   # Start the server
-   npm start
-   ```
-
-3. **Frontend Setup** (in a new terminal)
-   ```bash
-   # Navigate to client directory
-   cd client
+   git clone https://github.com/sayeedmunees/nex-g-frontend
+   cd nex-g-frontend
 
    # Install dependencies
    npm install
@@ -119,9 +96,8 @@ The application features a modern, responsive design with real-time cart managem
    npm start
    ```
 
-4. **Access the Application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
+2. **Access the Application**
+   - Frontend: http://localhost:5173
 
 ## 📡 API Endpoints
 
